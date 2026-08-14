@@ -1,3 +1,5 @@
+
+
 export let cart = JSON.parse(localStorage.getItem('cart')) || []
 
 export function addToCart(productId, productQtd){
@@ -13,7 +15,8 @@ export function addToCart(productId, productQtd){
     cart.push(
       {
         id: productId,
-        qtd: productQtd
+        qtd: productQtd,
+        deliveryOptionId: '2'
       }
     )
   }
@@ -30,7 +33,39 @@ export function updateCartQuantity(){
   return cartQuantity
 }
 
-function saveToLocalStorage(params) {
-  localStorage.setItem('cart', JSON.stringify(cart))
+export function updateProductQuantity(productToUpdateId) {
+  cart.forEach((cartItem)=>{
+    if (cartItem.id === productToUpdateId) {
+      cartItem.qtd ++
+      console.log(cart);
+      saveToLocalStorage()
+    }
+  })
+}
+
+export function deleteFromCart(productToDeleteId){
+  let newCart = []
+  cart.forEach((cartItem)=>{
+    if (cartItem.id !== productToDeleteId) {
+      newCart.push(cartItem)
+    }
+  })
+  cart = newCart
+  console.log(cart);
+  saveToLocalStorage()
+} 
+
+export function updateDeliveryOption(cartItemId, newDeliveryOptionId){
+  cart.forEach((cartItem)=>{
+    if (cartItem.id === cartItemId) {
+      cartItem.deliveryOptionId = newDeliveryOptionId
+    }
+  })
+  saveToLocalStorage()
   
 }
+
+function saveToLocalStorage(params) {
+  localStorage.setItem('cart', JSON.stringify(cart))
+}
+
