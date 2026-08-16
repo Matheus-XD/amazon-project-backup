@@ -2,7 +2,7 @@
 
 export let cart = JSON.parse(localStorage.getItem('cart')) || []
 
-export function addToCart(productId, productQtd){
+export function addToCart(productId, productQtd, productPriceCents){
   let matchingItem;
   cart.forEach((cartItem)=>{
     if(cartItem.id === productId){
@@ -16,7 +16,8 @@ export function addToCart(productId, productQtd){
       {
         id: productId,
         qtd: productQtd,
-        deliveryOptionId: '2'
+        priceCents: productPriceCents,
+        deliveryOptionId: 1
       }
     )
   }
@@ -62,6 +63,10 @@ export function updateDeliveryOption(cartItemId, newDeliveryOptionId){
     }
   })
   saveToLocalStorage()
+  
+}
+
+export function renderDeliveryDate() {
   
 }
 

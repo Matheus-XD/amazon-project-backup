@@ -37,7 +37,8 @@ products.forEach((product)=>{
         </div>
 
         <div class="product-quantity-container">
-        <select>
+        <select class = "js-select-container"
+        data-product-id = "${product.id}">
             <option selected value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -59,7 +60,8 @@ products.forEach((product)=>{
         </div>
 
         <button class="add-to-cart-button button-primary js-add-to-cart-button" 
-        data-product-id="${product.id}">
+        data-product-id="${product.id}"
+        data-product-price-cents = "${product.priceCents}">
         Add to Cart
         </button>
     </div>
@@ -69,14 +71,27 @@ products.forEach((product)=>{
 document.querySelector('.js-products-grid')
 .innerHTML = productGridHTML
 
+function getproductQuantity(productId) {
+    let selectedQuantity;
+    document.querySelectorAll('.js-select-container')
+    .forEach((selectContainer)=>{
+        const selectcontainerProductId = selectContainer.dataset.productId
+        if (selectcontainerProductId === productId) {
+            selectedQuantity = selectContainer.value
+        }
+    })
+    return selectedQuantity
+}
+
 document.querySelectorAll('.js-add-to-cart-button')
 .forEach((addButton)=>{
     addButton.addEventListener('click', ()=>{
         const productId = addButton.dataset.productId
-        console.log(productId);
-        addToCart(productId, 1)
+        const productPriceCents = Number(addButton.dataset.productPriceCents)
+        const productQuantity = Number(getproductQuantity(productId))
+        console.log(productQuantity);
+        addToCart(productId, productQuantity, productPriceCents)
         renderCartQuantity()
         
     })
 })
-

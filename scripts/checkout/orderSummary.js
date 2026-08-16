@@ -1,7 +1,8 @@
-import { cart, updateProductQuantity, deleteFromCart, updateDeliveryOption } from "../../data/cart.js";
+import { cart, updateProductQuantity, deleteFromCart, updateDeliveryOption, updateCartQuantity } from "../../data/cart.js";
 import {products} from "../../data/products.js"
 import { deliveryOptions } from "../../data/delivery-options.js";
 import { centsToDolar } from "../../utils/cents-to-dolar.js";
+import { renderPaymentSummary } from "./paymentSummary.js";
 import dayjs from "https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js"
 
 const today = dayjs()
@@ -16,10 +17,17 @@ export function renderOrderSummary(){
             }
         })
 
+        let deliveryDate = ''
+        deliveryOptions.forEach((option)=>{
+            if (cartItem.deliveryOptionId === option.id) {
+                deliveryDate = today.add(option.daysToDelivery, 'days').format('dddd, MMMM D')
+            }
+        })
+
         orderSummaryHTML += `
         <div class="cart-item-container">
         <div class="delivery-date">
-            Delivery date: Tuesday, June 21
+            Delivery date: ${deliveryDate}
         </div>
 
         <div class="cart-item-details-grid">
@@ -104,12 +112,16 @@ export function renderOrderSummary(){
     document.querySelector('.js-order-summary')
     .innerHTML = orderSummaryHTML
 
+    document.querySelector('.js-return-to-home-link')
+    .innerText = `${updateCartQuantity()} items`
+
     document.querySelectorAll('.js-update-quantity-button')
     .forEach((updateButton)=>{
         updateButton.addEventListener('click', ()=>{
             const productToUpdateId = updateButton.dataset.productToUpdateId
             updateProductQuantity(productToUpdateId)
-            renderOrderSummary()        
+            renderOrderSummary()
+            renderPaymentSummary()       
         })
     })
 
@@ -119,16 +131,18 @@ export function renderOrderSummary(){
             const productToDeleteId = deleteButton.dataset.productToDeleteId
             deleteFromCart(productToDeleteId)
             renderOrderSummary()
+            renderPaymentSummary()
         })
     })
 
     document.querySelectorAll('.js-delivery-option')
     .forEach((deliveryOption)=>{
         deliveryOption.addEventListener('click', ()=>{
-            const newDeliveryOptionId = deliveryOption.dataset.deliveryOptionId
+            const newDeliveryOptionId = Number(deliveryOption.dataset.deliveryOptionId)
             const cartItemId = deliveryOption.dataset.cartItemId
             updateDeliveryOption(cartItemId, newDeliveryOptionId)
             renderOrderSummary()
+            renderPaymentSummary()
         })
     })
     
