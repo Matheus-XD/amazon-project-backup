@@ -34,10 +34,10 @@ export function updateCartQuantity(){
   return cartQuantity
 }
 
-export function updateProductQuantity(productToUpdateId) {
+export function updateProductQuantity(productToUpdateId, newQuantity) {
   cart.forEach((cartItem)=>{
     if (cartItem.id === productToUpdateId) {
-      cartItem.qtd ++
+      cartItem.qtd = newQuantity
       console.log(cart);
       saveToLocalStorage()
     }

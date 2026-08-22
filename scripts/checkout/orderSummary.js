@@ -35,26 +35,29 @@ export function renderOrderSummary(){
             src= ${matchingItem.image}>
 
             <div class="cart-item-details">
-            <div class="product-name">
-                ${matchingItem.name}
-            </div>
-            <div class="product-price">
-                $${centsToDolar(matchingItem.priceCents)}
-            </div>
-            <div class="product-quantity">
-                <span>
-                Quantity: <span class="quantity-label js-quantity-label">${cartItem.qtd}</span>
-                </span>
-                <button class="update-quantity-button link-primary js-update-quantity-button"
-                data-product-to-update-id = "${matchingItem.id}"
-                >
-                Update
-                </button>
-                <button class="delete-quantity-button link-primary js-delete-quantity-button"
-                data-product-to-delete-id = "${matchingItem.id}">
-                Delete
-                </button>
-            </div>
+                <div class="product-name">
+                    ${matchingItem.name}
+                </div>
+                <div class="product-price">
+                    $${centsToDolar(matchingItem.priceCents)}
+                </div>
+                <div class="product-quantity js-product-quantity-section"
+                data-product-id = "${matchingItem.id}">
+                    <span>
+                        Quantity: <span class="quantity-label js-quantity-label">${cartItem.qtd}</span>
+                    </span>
+                    <button class="update-quantity-button link-primary js-update-quantity-button"
+                    data-product-to-update-id = "${matchingItem.id}"
+                    data-cart-item-qtd = "${cartItem.qtd}"
+                    data-matching-item-id = "${matchingItem.id}"
+                    >
+                    Update
+                    </button>
+                    <button class="delete-quantity-button link-primary js-delete-quantity-button"
+                    data-product-to-delete-id = "${matchingItem.id}">
+                    Delete
+                    </button>
+                </div>
             </div>
 
             <div class="delivery-options">
@@ -119,9 +122,10 @@ export function renderOrderSummary(){
     .forEach((updateButton)=>{
         updateButton.addEventListener('click', ()=>{
             const productToUpdateId = updateButton.dataset.productToUpdateId
-            updateProductQuantity(productToUpdateId)
-            renderOrderSummary()
-            renderPaymentSummary()       
+            const cartItemQtd = updateButton.dataset.cartItemQtd
+            const matchingItemId = updateButton.dataset.matchingItemId
+            renderUpdateSection(cartItemQtd, matchingItemId, productToUpdateId)
+                 
         })
     })
 
@@ -145,5 +149,65 @@ export function renderOrderSummary(){
             renderPaymentSummary()
         })
     })
+
     
+    
+}
+
+function renderUpdateSection(cartItemQtd, matchingItemId, productToUpdateId) {
+    const updateSectionHTML = `
+    <span>
+        Quantity: 
+            <input class="checkout-quantity-input js-checkout-quantity-input" type = "number" value = "${cartItemQtd}"
+            data-product-id = "${matchingItemId}">
+    </span>
+    <button class="update-quantity-button link-primary js-save-quantity-button"
+    data-product-to-update-id = "${matchingItemId}"
+    >
+    Save
+    </button>
+    <button class="delete-quantity-button link-primary js-cancel-quantity-button"
+    data-product-to-delete-id = "${matchingItemId}">
+    Cancel
+    </button>
+    `
+
+    document.querySelectorAll('.js-product-quantity-section')
+    .forEach((section)=>{
+        let sectionProductId = section.dataset.productId
+        if (sectionProductId === productToUpdateId) {
+            section.innerHTML = updateSectionHTML
+        }
+    })
+
+
+    document.querySelectorAll('.js-save-quantity-button')
+    .forEach((saveButton)=>{
+        saveButton.addEventListener('click', ()=>{
+            let newQuantity = 0
+            const productToUpdateId = saveButton.dataset.productToUpdateId
+            document.querySelectorAll('.js-checkout-quantity-input')
+            .forEach((input)=>{
+                const inputProductId = input.dataset.productId
+                if (productToUpdateId === inputProductId) {
+                    newQuantity = Number(input.value)                
+                }
+            })      
+            updateProductQuantity(productToUpdateId, newQuantity)
+           console.log(productToUpdateId);
+           
+            
+            console.log(cart);
+            
+            renderOrderSummary()
+            renderPaymentSummary()
+        })
+    })
+
+    document.querySelectorAll('.js-cancel-quantity-button')
+    .forEach((cancelButton)=>{
+        cancelButton.addEventListener('click', ()=>{
+            renderOrderSummary()
+        })
+    })
 }

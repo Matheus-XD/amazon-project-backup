@@ -119,6 +119,11 @@
   margin-left: 3px;
 }
 
+.checkout-quantity-input{
+  width: 33px;
+  height: 25;
+  font-size: 16px;
+}
 .update-quantity-button{
   border-style: none ;
   background-color: transparent;
